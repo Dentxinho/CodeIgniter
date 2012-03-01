@@ -1,0 +1,9 @@
+[submodule "application/libraries/twig"]
+	path = application/libraries/twig
+	url = https://github.com/fabpot/Twig.git
+[submodule "resources/bootstrap"]
+	path = resources/bootstrap
+	url = https://github.com/twitter/bootstrap.git
+[submodule "resources/less"]
+	path = resources/less
+	url = https://github.com/cloudhead/less.js.git
