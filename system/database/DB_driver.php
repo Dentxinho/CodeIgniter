@@ -4,22 +4,10 @@
  *
  * An open source application development framework for PHP 5.1.6 or newer
  *
- * NOTICE OF LICENSE
- * 
- * Licensed under the Open Software License version 3.0
- * 
- * This source file is subject to the Open Software License (OSL 3.0) that is
- * bundled with this package in the files license.txt / license.rst.  It is
- * also available through the world wide web at this URL:
- * http://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to obtain it
- * through the world wide web, please send an email to
- * licensing@ellislab.com so we can send you a copy immediately.
- *
  * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2011, EllisLab, Inc. (http://ellislab.com/)
- * @license		http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2008 - 2011, EllisLab, Inc.
+ * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
  * @filesource
@@ -37,7 +25,7 @@
  * @package		CodeIgniter
  * @subpackage	Drivers
  * @category	Database
- * @author		EllisLab Dev Team
+ * @author		ExpressionEngine Dev Team
  * @link		http://codeigniter.com/user_guide/database/
  */
 class CI_DB_driver {
@@ -126,43 +114,16 @@ class CI_DB_driver {
 		// Connect to the database and set the connection ID
 		$this->conn_id = ($this->pconnect == FALSE) ? $this->db_connect() : $this->db_pconnect();
 
-		// No connection resource?  Check if there is a failover else throw an error
+		// No connection resource?  Throw an error
 		if ( ! $this->conn_id)
 		{
-			// Check if there is a failover set
-			if ( ! empty($this->failover) && is_array($this->failover))
+			log_message('error', 'Unable to connect to the database');
+
+			if ($this->db_debug)
 			{
-				// Go over all the failovers
-				foreach ($this->failover as $failover)
-				{
-					// Replace the current settings with those of the failover
-					foreach ($failover as $key => $val)
-					{
-						$this->$key = $val;
-					}
-
-					// Try to connect
-					$this->conn_id = ($this->pconnect == FALSE) ? $this->db_connect() : $this->db_pconnect();
-
-					// If a connection is made break the foreach loop
-					if ($this->conn_id)
-					{
-						break;
-					}
-				}
+				$this->display_error('db_unable_to_connect');
 			}
-
-			// We still don't have a connection?
-			if ( ! $this->conn_id)
-			{
-				log_message('error', 'Unable to connect to the database');
-
-				if ($this->db_debug)
-				{
-					$this->display_error('db_unable_to_connect');
-				}
-				return FALSE;
-			}
+			return FALSE;
 		}
 
 		// ----------------------------------------------------------------
@@ -257,7 +218,7 @@ class CI_DB_driver {
 
 		// Some DBs have functions that return the version, and don't run special
 		// SQL queries per se. In these instances, just return the result.
-		$driver_version_exceptions = array('oci8', 'sqlite', 'cubrid', 'pdo');
+		$driver_version_exceptions = array('oci8', 'sqlite', 'cubrid');
 
 		if (in_array($this->dbdriver, $driver_version_exceptions))
 		{
@@ -290,10 +251,9 @@ class CI_DB_driver {
 	{
 		if ($sql == '')
 		{
-			log_message('error', 'Invalid query: '.$sql);
-
 			if ($this->db_debug)
 			{
+				log_message('error', 'Invalid query: '.$sql);
 				return $this->display_error('db_invalid_query');
 			}
 			return FALSE;
@@ -346,23 +306,21 @@ class CI_DB_driver {
 			// This will trigger a rollback if transactions are being used
 			$this->_trans_status = FALSE;
 
-			// Grab the error number and message now, as we might run some
-			// additional queries before displaying the error
-			$error_no = $this->_error_number();
-			$error_msg = $this->_error_message();
-
-			// Log errors
-			log_message('error', 'Query error: '.$error_msg);
-
 			if ($this->db_debug)
 			{
+				// grab the error number and message now, as we might run some
+				// additional queries before displaying the error
+				$error_no = $this->_error_number();
+				$error_msg = $this->_error_message();
+
 				// We call this function in order to roll-back queries
 				// if transactions are enabled.  If we don't call this here
 				// the error message will trigger an exit, causing the
 				// transactions to remain in limbo.
 				$this->trans_complete();
 
-				// Display errors
+				// Log and display errors
+				log_message('error', 'Query error: '.$error_msg);
 				return $this->display_error(
 										array(
 												'Error Number: '.$error_no,
@@ -549,7 +507,6 @@ class CI_DB_driver {
 		}
 
 		$this->trans_begin($test_mode);
-		$this->_trans_depth += 1;
 	}
 
 	// --------------------------------------------------------------------
@@ -572,10 +529,6 @@ class CI_DB_driver {
 		{
 			$this->_trans_depth -= 1;
 			return TRUE;
-		}
-		else
-		{
-			$this->_trans_depth = 0;
 		}
 
 		// The query() function will set this flag to FALSE in the event that a query failed
@@ -994,7 +947,6 @@ class CI_DB_driver {
 			foreach ($where as $key => $val)
 			{
 				$prefix = (count($dest) == 0) ? '' : ' AND ';
-				$key = $this->_protect_identifiers($key);
 
 				if ($val !== '')
 				{
@@ -1063,7 +1015,6 @@ class CI_DB_driver {
 		else
 		{
 			$args = (func_num_args() > 1) ? array_splice(func_get_args(), 1) : null;
-
 			if (is_null($args))
 			{
 				return call_user_func($function);
@@ -1217,7 +1168,7 @@ class CI_DB_driver {
 
 		if ($native == TRUE)
 		{
-			$message = (array) $error;
+			$message = $error;
 		}
 		else
 		{
@@ -1436,7 +1387,21 @@ class CI_DB_driver {
 
 		return $item.$alias;
 	}
+	
+	// --------------------------------------------------------------------
 
+	/**
+	 * Dummy method that allows Active Record class to be disabled
+	 *
+	 * This function is used extensively by every db driver.
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	protected function _reset_select()
+	{
+	
+	}
 
 }
 
