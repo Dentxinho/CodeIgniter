@@ -868,6 +868,10 @@ class CI_Upload {
 			{
 				return TRUE; // its an image, no "triggers" detected in the first 256 bytes, we're good
 			}
+			else
+			{
+				return FALSE;
+			}
 		}
 
 		if (($data = @file_get_contents($file)) === FALSE)
@@ -1095,7 +1099,7 @@ class CI_Upload {
 				$proc = @popen($cmd, 'r');
 				if (is_resource($proc))
 				{
-					$mime = @fread($test, 512);
+					$mime = @fread($proc, 512);
 					@pclose($proc);
 					if ($mime !== FALSE)
 					{
