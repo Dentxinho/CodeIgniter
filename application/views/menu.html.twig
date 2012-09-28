@@ -1,0 +1,19 @@
+<div class="well well-small sidebar-nav">
+	<ul class="nav" id="ul-menu">
+		<div class="nav nav-list">
+			<li class="nav-header"><a data-toggle="collapse" data-parent="#ul-menu" href="#menu1-collapse">Menu 1</a></li>
+		</div>
+		<div id="menu1-collapse" class="nav nav-list collapse in">
+			<li class="active"> {{ anchor('#', 'Item1') }} </li>
+			<li> {{ anchor('#', 'Item2') }} </li>
+		</div>
+
+		<div class="nav nav-list">
+			<li class="nav-header"><a data-toggle="collapse" data-parent="#ul-menu" href="#menu2-collapse">Menu 2 - Try me</a></li>
+		</div>
+		<div id="menu2-collapse" class="nav nav-list collapse">
+			<li> {{ anchor('#', 'Item3') }} </li>
+			<li> {{ anchor('#', 'Item4') }} </li>
+		</div>
+	</ul>
+</div>

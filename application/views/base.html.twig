@@ -1,0 +1,175 @@
+{% from 'flash.html.twig' import session_flash %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+	{% block head %}
+		<head>
+			{% block meta %}
+				<meta charset="UTF-8" />
+			{% endblock meta %}
+
+			<link rel="stylesheet" href="{{ base_url() }}resources/bootstrap/docs/assets/css/bootstrap.css">
+	 		<link rel="stylesheet" href="{{ base_url() }}resources/bootstrap/docs/assets/css/bootstrap-responsive.css">
+			<style type="text/css">
+				{% block custom_css %}{% endblock %}
+
+					{# Move all the css below to a own separate file #}
+					/*** LAYOUT ***/
+					html,body {
+						height: 100%;
+					}
+					#wrap {
+						min-height: 100%;
+						height: auto !important;
+						height: 100%;
+						margin: 0;
+						margin-bottom: -41px; /* negative of footer height plus footer border */
+					}
+					#main {
+						overflow: auto;
+					}
+					#push {
+						height: 40px;
+					}
+					@media ( max-width : 979px) {
+						.navbar-fixed-top {
+							margin-bottom: 0;
+							position: fixed;
+						}
+					}
+					.sidebar-nav {
+						margin-top: 20px;
+						padding: 9px 0 !important;
+					}
+					/***** LAYOUT END *****/
+
+					/***** FOOTER *****/
+					footer {
+						height:40px;
+						position: relative;
+						clear: both;
+						color: #666;
+						background-color: #F5F5F5;
+						border-color: #D4D4D4;
+						border-width: 1px 0 0;
+						border-style: solid;
+					}
+					footer.inverse {
+						background-color: #222;
+					}
+					footer a {
+						color: #999;
+					}
+					footer a:hover, footer a:focus {
+						color: #333;
+					}
+					footer.inverse a:hover, footer.inverse a:focus {
+						color: #EFEFEF;
+					}
+					.footer-inner p.footer-text {
+						line-height: 40px;
+						margin-bottom: 0;
+					}
+					footer p,.footer p {
+						text-align: center !important;
+					}
+
+					p.debug_info {
+						font-size: 11px;
+						padding: 0 0 0 10px;
+						margin: 0;
+						line-height: 40px;
+						position: absolute;
+					}
+					/***** FOOTER END *****/
+
+					.alert p {
+						margin: 0 !important;
+					}
+			</style>
+
+			{% block head_style %}
+				{# Add your own css here #}
+			{% endblock head_style %}
+
+			{% block head_script %}
+				{# Overwrite this block to add your own js here #}
+			{% endblock head_script %}
+
+			<!--[if lt IE 9]>
+				<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+			<![endif]-->
+
+			<title>{% block title %}Main{% endblock %}</title>
+		</head>
+	{% endblock head %}
+	<body>
+		<div class="wrapper" id="wrap">
+			{% block navbar %}
+				{% include 'navbar.html.twig' %}
+			{% endblock navbar %}
+
+			{% block container %}
+				<div id="main" class="container-fluid">
+					<div class="row-fluid">
+						{% block outer_menu %}
+	 						<div class="span3">
+	 							{% block menu %}{% endblock menu %}
+	 						</div>
+						{% endblock outer_menu %}
+
+						{% block outer_content %}
+							<div class="span9"> {# Change class to "span12" and comment out outer_menu block to disable sidebar #}
+								{% block page_header %}{% endblock page_header %}
+								<div class="row-fluid">
+									<div class="span12">
+										{% block flashes %}
+											{% block other_flash %}{% endblock other_flash %}
+											{% block session_flash %} {{ session_flash(true) }} {% endblock session_flash %}
+										{% endblock flashes %}
+
+										{% block content %}{% endblock content %}
+									</div>
+								</div>
+							</div>
+						{% endblock outer_content %}
+					</div>
+				</div> <!-- /container -->
+			{% endblock container %}
+			<div id="push"><!--  --></div>
+		</div>
+		{% block footer %}
+			<footer>
+				{% block footer_inner %}
+					<div class="footer-inner">
+						{% if not empty(elapsed_time) and not empty(memory_usage) %}
+							<p class="debug_info">Page rendered in <strong>{{ elapsed_time }}</strong> seconds using <strong>{{ memory_usage }}</strong> of memory.</p>
+						{% endif %}
+						<p class="footer-text">&copy; 2012 {{ anchor('', 'Brand') }}</p>
+					</div>
+				{% endblock footer_inner %}
+			</footer>
+		{% endblock footer %}
+
+		{% block foot_script %}
+			<script src="{{ base_url() }}resources/bootstrap/docs/assets/js/jquery.js"></script>
+			<script src="{{ base_url() }}resources/bootstrap/docs/assets/js/bootstrap.min.js"></script>
+
+{# 			<script src="{{ base_url() }}resources/bootstrap/js/bootstrap-affix.js"></script>#}
+{# 			<script src="{{ base_url() }}resources/bootstrap/js/bootstrap-alert.js"></script>#}
+{# 			<script src="{{ base_url() }}resources/bootstrap/js/bootstrap-button.js"></script>#}
+{# 			<script src="{{ base_url() }}resources/bootstrap/js/bootstrap-carousel.js"></script>#}
+{# 			<script src="{{ base_url() }}resources/bootstrap/js/bootstrap-collapse.js"></script>#}
+{# 			<script src="{{ base_url() }}resources/bootstrap/js/bootstrap-dropdown.js"></script>#}
+{# 			<script src="{{ base_url() }}resources/bootstrap/js/bootstrap-modal.js"></script>#}
+{# 			<script src="{{ base_url() }}resources/bootstrap/js/bootstrap-popover.js"></script>#}
+{# 			<script src="{{ base_url() }}resources/bootstrap/js/bootstrap-scrollspy.js"></script>#}
+{# 			<script src="{{ base_url() }}resources/bootstrap/js/bootstrap-tab.js"></script>#}
+{# 			<script src="{{ base_url() }}resources/bootstrap/js/bootstrap-tooltip.js"></script>#}
+{# 			<script src="{{ base_url() }}resources/bootstrap/js/bootstrap-transition.js"></script>#}
+{# 			<script src="{{ base_url() }}resources/bootstrap/js/bootstrap-typeahead.js"></script>#}
+{# 			{# To only use a subset or add more js overwrite and copy paste this block #}
+		{% endblock foot_script %}
+	</body>
+</html>

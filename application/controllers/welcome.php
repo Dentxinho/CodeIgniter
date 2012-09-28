@@ -19,8 +19,22 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
-		$this->load->library('twig');
-		$this->twig->display('welcome_message.html.twig');
+		$data['alerts'][] = array('type' => 'error',
+								  'text' => 'some_error');
+		$data['alerts'][] = array('type' => 'warning',
+								  'text' => 'Hey, this is a hardcoded warning!');
+
+		/**
+		 * Session flashdata usage:
+		 *
+		 * $this->session->set_flashdata('msg1', array('type' => 'success',
+		 *											   'text' => 'some_success_message'));
+		 *
+		 * $this->session->set_flashdata('msg2', array('type' => 'warning',
+		 *											   'text' => 'Hey, this is a hardcoded warning!'));
+		 *
+		 */
+		$this->twig->display('welcome_message.html.twig', $data);
 	}
 }
 

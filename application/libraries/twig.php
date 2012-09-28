@@ -5,11 +5,11 @@ class Twig
 
 	const TWIG_CONFIG_FILE = "twig";
 
-    protected $_template_dir;
-    protected $_cache_dir;
+	protected $_template_dir;
+	protected $_cache_dir;
 
-    private $_CI;
-    private $_twig_env;
+	private $_CI;
+	private $_twig_env;
 
 	/**
 	 * Constructor
@@ -21,7 +21,7 @@ class Twig
 		$this->_CI->config->load(self::TWIG_CONFIG_FILE);
 
 		// set include path for twig
-		ini_set('include_path', ini_get('include_path') . PATH_SEPARATOR . APPPATH . 'libraries/Twig/lib/Twig/');
+		ini_set('include_path', ini_get('include_path') . PATH_SEPARATOR . APPPATH . 'libraries/twig/lib/Twig/');
 		require_once (string) "Autoloader" . EXT;
 
 		// register autoloader
@@ -35,12 +35,20 @@ class Twig
 		// load environment
 		$loader = new Twig_Loader_Filesystem($this->_template_dir);
 
-		$this->_twig_env = new Twig_Environment($loader, array(
-                'cache' => $this->_cache_dir,
-                'debug' => $debug,
-		));
+		$this->_twig_env = new Twig_Environment($loader, array('cache' => $this->_cache_dir,
+															   'autoescape' => FALSE,
+															   'debug' => $debug,));
 
-		$this->_ciFunctionInit();
+		if ($debug)
+		{
+			$this->_twig_env->addExtension(new Twig_Extension_Debug());
+		}
+
+		$this->_twig_env->registerUndefinedFunctionCallback(function($name) {
+			return new Twig_Function_Function($name);
+		});
+
+		$this->add_global('CI', $this->_CI);
 	}
 
     public function add_global($name, $obj)
@@ -54,12 +62,10 @@ class Twig
         {
             $this->_twig_env->addFunction($name, new Twig_Function_Function($name, array('is_safe' => array('html'))));
         }
-
         else
         {
             $this->_twig_env->addFunction($name, new Twig_Function_Function($name));
         }
-
 	}
 
 	public function render($template, $data = array())
@@ -72,41 +78,14 @@ class Twig
 	{
 		$template = $this->_twig_env->loadTemplate($template);
 		/* elapsed_time and memory_usage */
-		$data['elapsed_time'] = $this->_CI->benchmark->elapsed_time('total_execution_time_start', 'total_execution_time_end');
-		$memory = (!function_exists('memory_get_usage')) ? '0' : round(memory_get_usage()/1024/1024, 2) . 'MB';
-		$data['memory_usage'] = $memory;
+		if (ENVIRONMENT == 'development')
+		{
+			$data['elapsed_time'] = $this->_CI->benchmark->elapsed_time('total_execution_time_start', 'total_execution_time_end');
+			$memory = (!function_exists('memory_get_usage')) ? '0' : round(memory_get_usage()/1024/1024, 2) . 'MB';
+			$data['memory_usage'] = $memory;
+		}
+
 		$template->display($data);
 	}
 
-	private function _ciFunctionInit()
-	{
-		$this->add_function('base_url');
-		$this->add_function('site_url');
-		$this->add_function('current_url');
-
-		// form functions
-		$this->add_function('form_open');
-		$this->add_function('form_hidden');
-		$this->add_function('form_input');
-		$this->add_function('form_password');
-		$this->add_function('form_upload');
-		$this->add_function('form_textarea');
-		$this->add_function('form_dropdown');
-		$this->add_function('form_multiselect');
-		$this->add_function('form_fieldset');
-		$this->add_function('form_fieldset_close');
-		$this->add_function('form_checkbox');
-		$this->add_function('form_radio');
-		$this->add_function('form_submit');
-		$this->add_function('form_label');
-		$this->add_function('form_reset');
-		$this->add_function('form_button');
-		$this->add_function('form_close');
-		$this->add_function('form_prep');
-		$this->add_function('set_value');
-		$this->add_function('set_select');
-		$this->add_function('set_checkbox');
-		$this->add_function('set_radio');
-		$this->add_function('form_open_multipart');
-	}
 }

@@ -1,0 +1,27 @@
+{% macro flash(type, message, close, class) %}
+	{% if message %}
+		<div class="alert {{ type ? 'alert-'~type : '' }} fade in {{ class|default('') }}" data-alert="alert">
+			{% if close|default(false) %}
+				<a class="close" data-dismiss="alert" href="#">×</a>
+			{% endif %}
+			{{ CI.lang.line(message) ? CI.lang.line(message) : message }}
+		</div>
+	{% endif %}
+{% endmacro %}
+
+{% macro session_flash(close, class) %}
+	{% set flashdata = CI.session.all_flashdata() %}
+	{% if flashdata|length > 0 %}
+		{{ _self.display_alerts(flashdata, close, class) }}
+	{% endif %}
+{% endmacro %}
+
+{# alerts = [{'type': 'error', 'text' : 'some_error'},
+			{'type': 'warning', 'text' : 'Hey, this is a hardcoded warning!'}] #}
+{% macro display_alerts(alerts, close, class) %}
+	{% if alerts|length > 0 %}
+		{% for alert in alerts %}
+			{{ _self.flash(alert.type, alert.text, close, class) }}
+		{% endfor %}
+	{% endif %}
+{% endmacro %}
