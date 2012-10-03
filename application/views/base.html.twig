@@ -1,4 +1,5 @@
 {% from 'flash.html.twig' import session_flash %}
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -10,83 +11,10 @@
 
 			<link rel="stylesheet" href="{{ base_url() }}resources/bootstrap/docs/assets/css/bootstrap.css">
 	 		<link rel="stylesheet" href="{{ base_url() }}resources/bootstrap/docs/assets/css/bootstrap-responsive.css">
+
+	 		<link rel="stylesheet" href="{{ base_url() }}resources/css/custom.css">
 			<style type="text/css">
-				{% block custom_css %}{% endblock custom_css %}
-
-				/* Move all the css below to a own separate file */
-				/*** LAYOUT ***/
-				html,body {
-					height: 100%;
-				}
-				#wrap {
-					min-height: 100%;
-					height: auto !important;
-					height: 100%;
-					margin: 0;
-					margin-bottom: -41px; /* negative of footer height plus footer border */
-				}
-				#main {
-					overflow: auto;
-					/*padding-top: 40px;*/ /* Set padding-top for navbar-fixed-top */
-				}
-				#push {
-					height: 40px;
-				}
-				@media ( max-width : 979px) {
-					.navbar-fixed-top {
-						margin-bottom: 0;
-						position: fixed;
-					}
-				}
-				.sidebar-nav {
-					margin-top: 20px;
-					padding: 9px 0 !important;
-				}
-				/***** LAYOUT END *****/
-
-				/***** FOOTER *****/
-				footer {
-					height:40px;
-					position: relative;
-					clear: both;
-					color: #666;
-					background-color: #F5F5F5;
-					border-color: #D4D4D4;
-					border-width: 1px 0 0;
-					border-style: solid;
-				}
-				footer.inverse {
-					background-color: #222;
-				}
-				footer a {
-					color: #999;
-				}
-				footer a:hover, footer a:focus {
-					color: #333;
-				}
-				footer.inverse a:hover, footer.inverse a:focus {
-					color: #EFEFEF;
-				}
-				.footer-inner p.footer-text {
-					line-height: 40px;
-					margin-bottom: 0;
-				}
-				footer p,.footer p {
-					text-align: center !important;
-				}
-
-				p.debug_info {
-					font-size: 11px;
-					padding: 0 0 0 10px;
-					margin: 0;
-					line-height: 40px;
-					position: absolute;
-				}
-				/***** FOOTER END *****/
-
-				.alert p {
-					margin: 0 !important;
-				}
+				{% block custom_css %}{% endblock %}
 			</style>
 
 			{% block head_style %}
@@ -101,7 +29,7 @@
 				<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 			<![endif]-->
 
-			<title>{% block title %}Main{% endblock title %}</title>
+			<title>{% block title %}Main{% endblock %}</title>
 		</head>
 	{% endblock head %}
 	<body>
