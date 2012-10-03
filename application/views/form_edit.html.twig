@@ -1,0 +1,59 @@
+{% extends 'layout.html.twig' %}
+{% from 'flash.html.twig' import display_alerts %}
+
+{% set resource = CI.uri.rsegment(1) %}
+
+{% if id is not defined %}
+	{% set id = CI.uri.rsegment(3, false) %}
+{% endif %}
+
+{% if not title %}
+	{% set title = get_class_vars(get_class(CI)).title %}
+{% endif %}
+
+{% block title %}{{ title|default('') }}{% endblock title %}
+{% block headline %}{{ title|default('') }}{% endblock headline %}
+
+{% block other_flash %}
+	{{ parent() }}
+	{% set validation_errors = [] %}
+	{% for error in CI.form_validation.error_array() %}
+		{% set validation_errors = validation_errors|merge([{'type': 'warning', 'text': error}]) %}
+	{% endfor %}
+	{{ display_alerts(validation_errors, true) }}
+{% endblock other_flash %}
+
+{% block content %}
+
+	{% block form_start %}
+		{{ form_open('', {'class': 'form-horizontal'}) }}
+			{{ form_fieldset(action) }}
+	{% endblock form_start %}
+
+	{% block fields %}{% endblock fields %}
+
+	{% block buttons %}
+		<div class="form-actions">
+			{% if (id and (readonly is not empty) and CI.can_modify) %}
+				{{ anchor(resource~'/update/'~id, '<i class="icon-pencil icon-white"></i> Update','class="btn btn-primary"') }}
+			{% endif %}
+			{% if ((not id and (readonly is empty) and CI.can_write) or (id and (readonly is empty) and CI.can_modify)) %}
+					{{ form_button({'name':'save','type':'submit'}, '<i class="icon-ok-sign icon-white"></i> Save','class="btn btn-primary"') }}
+			{% endif %}
+			{% if (id and (readonly is empty)) %}
+				{{ anchor(resource~'/read/'~id, '<i class="icon-chevron-left icon"></i> Cancel','class="btn"') }}
+			{% else %}
+				{{ anchor(resource, '<i class="icon-chevron-left icon"></i> Cancel','class="btn"') }}
+			{% endif %}
+			{% if (id and readonly is not empty and CI.can_delete) %}
+				{{ anchor(resource~'/delete/'~id, '<i class="icon-trash icon-white"></i> Delete','class="btn btn-danger"') }}
+			{% endif %}
+		</div>
+	{% endblock buttons %}
+
+	{% block form_end %}
+			{{ form_fieldset_close() }}
+		{{ form_close() }}
+	{% endblock form_end %}
+
+{% endblock content %}

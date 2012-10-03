@@ -1,0 +1,49 @@
+{% extends 'layout.html.twig' %}
+{% from 'flash.html.twig' import display_alerts %}
+
+{% set resource = CI.uri.rsegment(1) %}
+
+{% if not title %}
+	{% set title = get_class_vars(get_class(CI)).title %}
+{% endif %}
+
+{% block title %}{{ title|default('') }}{% endblock title %}
+{% block headline %}{{ title|default('') }}{% endblock headline %}
+
+{% block other_flash %}
+	{{ parent() }}
+	{% set validation_errors = [] %}
+	{% for error in CI.form_validation.error_array() %}
+		{% set validation_errors = validation_errors|merge([{'type': 'warning', 'text': error}]) %}
+	{% endfor %}
+	{{ display_alerts(validation_errors, true) }}
+{% endblock other_flash %}
+
+{% block content %}
+	{% block filter %}
+		{{ form_open(resource ~ '/', {'class': 'well well-small form-inline'}) }}
+			{{ form_fieldset("Search") }}
+				{{ form_label('Name:', 'name', {'class': 'control-label'}) }}
+				{{ form_input('name', set_value('name')) }}
+				{{ form_button({'type': 'submit', 'class':'btn'}, '<i class="icon-search"></i> Search') }}
+			{{ form_fieldset_close() }}
+		{{ form_close() }}
+	{% endblock filter %}
+
+	{% block buttons %}
+		{% if CI.can_write %}
+			{{ anchor(resource~'/create/', '<i class="icon-plus icon-white"></i> Create','class="btn btn-primary"') }}
+		{% endif %}
+	{% endblock buttons %}
+
+	<div class="search-result">
+		{% block pagination %}
+			<div id="pagination">{{ CI.pagination.create_links() }}</div>
+		{% endblock pagination %}
+		{% block result_list %}
+			{% if table %}
+				{{ add_actions_to_table(table, resource) }}
+			{% endif %}
+		{% endblock result_list %}
+	</div>
+{% endblock content %}
